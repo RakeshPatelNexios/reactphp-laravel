@@ -23,7 +23,9 @@ $socket->on('connection', function ($connection) {
     echo "Remote address is : \n", $connection->getRemoteAddress();
 
     $connection->on('data', function ($data) use ($connection) {
-        echo "\n\nReceived: $data";
+        echo "\n\n--------------------------------------------------";
+        echo "\nReceived from CLIENT : $data\n";
+        
         $connection->write("You said: $data");
     });
 
