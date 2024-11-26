@@ -1,68 +1,45 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php'; // Load composer autoload
-$app = require __DIR__ . '/bootstrap/app.php';  // Load Laravel application bootstrap
-$app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+require __DIR__ . '/vendor/autoload.php';
 
-use App\Models\Task;
-use React\EventLoop\Loop;
-use React\Socket\SocketServer;
+use React\Socket\Server;
 use React\Socket\ConnectionInterface;
 
-$loop = Loop::get();
-$server = new SocketServer('127.0.0.1:8080', [], $loop);
+// Create a new socket server listening on 127.0.0.1:8080
+$server = new Server('127.0.0.1:8080');
 
-echo "WebSocket server running on ws://127.0.0.1:8080\n";
+echo "Socket server running on tcp://127.0.0.1:8080\n";
 
-// Track executed tasks
-$executedTasks = [];
+// Maintain a list of connected clients
+$clients = [];
 
-// Handle new client connections
-$server->on('connection', function (ConnectionInterface $connection) use ($loop, &$executedTasks) {
-    echo "New client connected\n";
-
-    // Periodic task execution every 10 seconds
-    $loop->addPeriodicTimer(10, function () use ($connection, &$executedTasks) {
-        // echo "Checking tasks...\n";
-
-        // Fetch tasks in chunks to avoid large memory usage
-        Task::chunk(50, function ($tasks) use ($connection, &$executedTasks) {
-            foreach ($tasks as $task) {
-                if (isset($executedTasks[$task->id]) && $executedTasks[$task->id] >= now()->timestamp) {
-                    continue; // Skip already executed tasks
-                }
-
-                $log = "Task Executed: {$task->name} at " . now();
-                $task->last_executed_at = now();
-                $task->save();
-
-                $executedTasks[$task->id] = now()->timestamp; // Mark as executed
-                $connection->write($log . "\n");
-                echo $log . PHP_EOL;
-            }
-        });
-    });
-
-    // Periodically poll for new tasks every 5 seconds
-    $loop->addPeriodicTimer(5, function () use (&$executedTasks, $connection) {
-        // echo "Polling for new tasks...\n";
-
-        $newTasks = Task::whereNotIn('id', array_keys($executedTasks))->get();
-        foreach ($newTasks as $task) {
-            $executedTasks[$task->id] = 0; // Mark as not executed yet
-            $log = "New Task Added: {$task->name}";
-            $connection->write($log . "\n");
-            echo $log . PHP_EOL;
+// Function to broadcast data to all clients except the sender
+$broadcast = function (ConnectionInterface $sender, string $data) use (&$clients) {
+    foreach ($clients as $client) {
+        if ($client !== $sender) {
+            $client->write($data);
         }
+    }
+};
+
+// Handle new connections
+$server->on('connection', function (ConnectionInterface $connection) use (&$clients, $broadcast) {
+    // Add the new connection to the clients list
+    $clients[] = $connection;
+    $remoteAddress = $connection->getRemoteAddress();
+    echo "New connection from {$remoteAddress}\n";
+
+    // Handle incoming data
+    $connection->on('data', function (string $data) use ($connection, $broadcast) {
+        echo "Received data: {$data} from {$connection->getRemoteAddress()}\n";
+        $broadcast($connection, $data);
     });
 
-    $connection->on('data', function ($data) {
-        echo "Received data: $data\n";
-    });
-    $connection->on('close', function () {
-        echo "Client disconnected\n";
+    // Handle connection closure
+    $connection->on('close', function () use (&$clients, $connection, $remoteAddress) {
+        // Remove the connection from the clients list
+        $clients = array_filter($clients, fn($client) => $client !== $connection);
+        echo "Connection closed: {$remoteAddress}\n";
     });
 });
 
-// Run the loop
-$loop->run();
