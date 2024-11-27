@@ -16,7 +16,7 @@
         <script src="https://cdn.socket.io/4.7.0/socket.io.min.js"></script>
          <!-- <script src="{{ asset('assets/js/custom.js') }}"></script> -->
         <script>
-           const ws = new WebSocket('ws://animated-train-r7jqxjgx55xhxvrg-8080.app.github.dev/:8080');
+           const ws = new WebSocket('ws://localhost:8080');
 
             ws.onopen = () => {
                 console.log('WebSocket connection opened');

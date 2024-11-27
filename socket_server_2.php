@@ -6,17 +6,10 @@ use React\EventLoop\Loop;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$http = new React\Http\HttpServer(function (Psr\Http\Message\ServerRequestInterface $request) {
-    return React\Http\Message\Response::plaintext(
-        "Hello World!\n"
-    );
-});
+$timer = 0;
+$socket = new React\Socket\SocketServer('127.0.0.1:8082');
 
-$loop = Loop::get();
-$socket = new React\Socket\SocketServer('127.0.0.1:8082', [], $loop);
-
-$http->listen($socket);
-echo "Server running : http://127.0.0.1:8082";
+echo "Server running : tcp://127.0.0.1:8082";
 
 $socket->on('connection', function ($connection) {
     echo "\n\nconnection established\n";
@@ -25,7 +18,7 @@ $socket->on('connection', function ($connection) {
     $connection->on('data', function ($data) use ($connection) {
         echo "\n\n--------------------------------------------------";
         echo "\nReceived from CLIENT : $data\n";
-        
+
         $connection->write("You said: $data");
     });
 
@@ -39,4 +32,10 @@ $socket->on('error', function (Exception $e) {
     echo 'Error: ' . $e->getMessage() . PHP_EOL;
 });
 
-$loop->run();
+
+Loop::addPeriodicTimer(1, function () use (&$timer) {
+    $timer++;
+    echo $timer;
+});
+
+
