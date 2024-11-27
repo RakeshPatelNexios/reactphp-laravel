@@ -3,6 +3,7 @@
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,11 @@ Route::get('/students', [StudentController::class, 'index'])->name('list');
 Route::get('/students-listings', [StudentController::class, 'getStudentsListings'])->name('students.list');
 Route::get('/students/create', [StudentController::class, 'create'])->name('student.create');
 Route::post('/student/store', [StudentController::class, 'store'])->name('student.store');
+
+Route::get('/itemslist', [ItemController::class, 'itemslist']); // Get all items listings screen
+Route::get('/itemscreate', [ItemController::class, 'itemscreate']); // Get all items listings screen
+Route::get('/items', [ItemController::class, 'index']); // Get all items
+Route::post('/items', [ItemController::class, 'store']); // Add new item
 
 Route::group(['middleware' => ['auth']], function () {
     

@@ -18,7 +18,7 @@
         "vue-template-compiler": "^2.7.16"
     },
     "dependencies": {
-        "socket.io": "^4.8.1",
-        "socket.io-client": "^4.8.1"
+        "express": "^4.21.1",
+        "socket.io": "^4.8.1"
     }
 }

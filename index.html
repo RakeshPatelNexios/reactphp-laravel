@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Item Listings</title>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Real-time Item Listings</h1>
+    <ul id="item-list"></ul>
+
+    <script>
+        // Connect to the WebSocket server
+        const socket = io("http://localhost:4000");
+
+        // Fetch existing items from the Laravel API
+        fetch('/items')
+            .then((response) => response.json())
+            .then((items) => {
+                const list = document.getElementById('item-list');
+                items.forEach((item) => {
+                    const li = document.createElement('li');
+                    li.textContent = item.name;
+                    list.appendChild(li);
+                });
+            });
+
+        // Listen for new items via WebSocket
+        socket.on("new-item", (item) => {
+            const list = document.getElementById('item-list');
+            const li = document.createElement('li');
+            li.textContent = item.name;
+            list.appendChild(li);
+        });
+    </script>
+</body>
+</html>

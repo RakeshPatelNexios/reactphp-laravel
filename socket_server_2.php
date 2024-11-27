@@ -2,8 +2,6 @@
 
 // php socket_server.php
 
-use React\EventLoop\Loop;
-
 require __DIR__ . '/vendor/autoload.php';
 
 $timer = 0;
@@ -31,11 +29,3 @@ $socket->on('connection', function ($connection) {
 $socket->on('error', function (Exception $e) {
     echo 'Error: ' . $e->getMessage() . PHP_EOL;
 });
-
-
-Loop::addPeriodicTimer(1, function () use (&$timer) {
-    $timer++;
-    echo $timer;
-});
-
-
