@@ -35,4 +35,8 @@ $socket->on('connection', function ($connection) {
     });
 });
 
+$socket->on('error', function (Exception $e) {
+    echo 'Error: ' . $e->getMessage() . PHP_EOL;
+});
+
 $loop->run();
