@@ -14,8 +14,6 @@ class CreateTasksTable extends Migration
     public function up()
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-            
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
@@ -24,10 +22,10 @@ class CreateTasksTable extends Migration
             $table->timestamps();
 
             $table->index('name');
-            $table->fullText('description');
+            // $table->fullText('description');
             $table->index('interval_seconds');
             $table->index('last_executed_at');
-        });        
+        });
     }
 
     /**

@@ -14,6 +14,18 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="https://cdn.socket.io/4.7.0/socket.io.min.js"></script>
-        <script src="{{ asset('assets/js/custom.js') }}"></script>
+         <!-- <script src="{{ asset('assets/js/custom.js') }}"></script> -->
+        <script>
+           const ws = new WebSocket('ws://animated-train-r7jqxjgx55xhxvrg-8080.app.github.dev/:8080');
+
+            ws.onopen = () => {
+                console.log('WebSocket connection opened');
+                ws.send('Hello, TCP server!');
+            };
+
+            ws.onmessage = (event) => {
+                console.log('Received from TCP server:', event.data);
+            };
+    </script>
     </body>
 </html>

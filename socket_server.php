@@ -2,44 +2,40 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use React\Socket\Server;
-use React\Socket\ConnectionInterface;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use Ratchet\Server\IoServer;
+use Ratchet\MessageComponentInterface;
+use Ratchet\ConnectionInterface;
 
-// Create a new socket server listening on 127.0.0.1:8080
-$server = new Server('127.0.0.1:8080');
-
-echo "Socket server running on tcp://127.0.0.1:8080\n";
-
-// Maintain a list of connected clients
-$clients = [];
-
-// Function to broadcast data to all clients except the sender
-$broadcast = function (ConnectionInterface $sender, string $data) use (&$clients) {
-    foreach ($clients as $client) {
-        if ($client !== $sender) {
-            $client->write($data);
-        }
+class WebSocketServer implements MessageComponentInterface {
+    public function onOpen(ConnectionInterface $conn) {
+        echo "New connection! ({$conn->resourceId})\n";
     }
-};
 
-// Handle new connections
-$server->on('connection', function (ConnectionInterface $connection) use (&$clients, $broadcast) {
-    // Add the new connection to the clients list
-    $clients[] = $connection;
-    $remoteAddress = $connection->getRemoteAddress();
-    echo "New connection from {$remoteAddress}\n";
+    public function onMessage(ConnectionInterface $from, $msg) {
+        echo "Message received: {$msg}\n";
+        $from->send("Server response: {$msg}");
+    }
 
-    // Handle incoming data
-    $connection->on('data', function (string $data) use ($connection, $broadcast) {
-        echo "Received data: {$data} from {$connection->getRemoteAddress()}\n";
-        $broadcast($connection, $data);
-    });
+    public function onClose(ConnectionInterface $conn) {
+        echo "Connection closed ({$conn->resourceId})\n";
+    }
 
-    // Handle connection closure
-    $connection->on('close', function () use (&$clients, $connection, $remoteAddress) {
-        // Remove the connection from the clients list
-        $clients = array_filter($clients, fn($client) => $client !== $connection);
-        echo "Connection closed: {$remoteAddress}\n";
-    });
-});
+    public function onError(ConnectionInterface $conn, \Exception $e) {
+        echo "An error occurred: {$e->getMessage()}\n";
+        $conn->close();
+    }
+}
 
+$server = IoServer::factory(
+    new HttpServer(
+        new WsServer(
+            new WebSocketServer()
+        )
+    ),
+    8080
+);
+
+echo "WebSocket server running at ws://127.0.0.1:8080\n";
+$server->run();
