@@ -1,14 +1,32 @@
+html, body {
+    height: 100%; /* Ensure the body and html occupy full height */
+    margin: 0;
+    display: flex;
+    flex-direction: column; /* Arrange content vertically */
+}
+.container {
+    flex: 1; /* Make the container grow to fill the space between the header and footer */
+}
 .form-signin {
     width: 100%;
     max-width: 330px;
     padding: 15px;
     margin: auto;
 }
-body .logo {
-    width: 200px;
+body .header-logo {
+    width: 156px;
     height: auto;
 }
-body .header-logo {
-    width: 90px;
-    height: auto;
+#item-header tr th:nth-child(1), #item-header tr th:nth-child(2), #item-header tr th:nth-child(4) {
+    width: 15%;
+}
+#item-header tr th:nth-child(3) {
+    width: 40%;
+}
+footer {
+    background-color: #f8f9fa; /* Optional: Footer background */
+    text-align: center; /* Centers text */
+    padding: 1rem 0; /* Adds spacing inside the footer */
+    width: 100%; /* Ensures it spans the full width */
+    border-top: 1px solid #ddd; /* Optional: Add a border at the top */
 }

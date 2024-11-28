@@ -1,3 +1,4 @@
+{{--
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,3 +98,47 @@
     </script>
 </body>
 </html>
+--}}
+
+@extends('includes.app')
+@section('page-title')
+    Create Item
+@endsection
+@section('section-contents')
+    <h1 class="text-center">Create Item</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-5 col-sm-10 col-12">
+            <!-- Form for Adding New Item -->
+            <form id="create-item-form">
+                <div class="mt-3">
+                    <input type="text" id="item-name" class="form-control" placeholder="Enter item name" required>
+                </div>
+                <div class="mt-3">
+                    <input type="text" id="item-sku" class="form-control" placeholder="Enter item sku" required>
+                </div>
+                <div class="mt-3">
+                    <textarea id="item-description" class="form-control" cols="30" rows="10" placeholder="Enter Description" required></textarea>
+                </div>
+                <div class="mt-3">
+                    <input type="text" id="item-price" class="form-control" placeholder="Enter item price" required>
+                </div>
+                <div class="mt-3">
+                    <select id="is_active" class="form-select">
+                        <option value="1" selected>Active</option>
+                        <option value="0">Not Active</option>
+                    </select>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary w-100">Add Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script src="{{ asset('assets/js/items/create.js') }}"></script>
+    <script>
+        const _token = "{{ csrf_token() }}";
+    </script>
+@endsection

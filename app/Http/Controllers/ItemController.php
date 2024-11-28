@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 
 class ItemController extends Controller
 {
@@ -23,11 +24,23 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the request
-        $request->validate([
+        $input = $request->all();
+        $rules = [
             'name' => 'required|string|max:255',
-            'sku' => 'required|unique:items',
-        ]);
+            'sku' => 'required|unique:items|string',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'is_active' => 'required|in:1,0',
+        ];
+        $validation = Validator::make($input, $rules);
+        if ($validation->fails()) {
+            $message = $validation->messages()->first();
+
+            return response()->json([
+                'status' => false,
+                'message' => $message,
+            ]);
+        }
 
         // Create the item
         $item = Item::create(Arr::except($request->all(), ['_token']));

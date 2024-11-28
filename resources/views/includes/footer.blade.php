@@ -1,15 +1,13 @@
-<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-    <p class="col-md-4 mb-0 text-muted">Copyright &copy; {{ date('Y') }}</p>
+<div class="container-xxl container-xl container-lg container-md container-sm">
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 border-top bg-dark px-3">
+        <p class="col-md-4 text-start mb-0 text-white">Copyright &copy; {{ date('Y') }}</p>
 
-    <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-      <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-    </a>
-
-    <ul class="nav col-md-4 justify-content-end">
-        <li class="nav-item">
-            <a href="{{ route('home') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="logo" class="header-logo"/>
-            </a>
-        </li>
-    </ul>
-</footer>
+        <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item">
+                <a href="{{ route('items.list') }}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="logo" class="header-logo"/>
+                </a>
+            </li>
+        </ul>
+    </footer>
+</div>
